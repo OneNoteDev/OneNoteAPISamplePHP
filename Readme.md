@@ -43,7 +43,7 @@ After you've setup your web server described above,....
 2. Configure a subdomain directory for the sample app. We recommend using a subdomain because you can only 
 register a single app with the root domain name on the Live Connect Developer Center. 
 3. Go to the [Microsoft app registration page](https://account.live.com/developers/applications/index).
-4. On the API Settings page, set Mobile or desktop setting to Yes.
+4. On the API Settings page, set Mobile or desktop setting to No.
 5. Set the Redirect URI to the sub-domain name of your web site. 
 6. On the App Setting page, copy the client ID and secret into the Callback.php file at ~lines 32 and 33. 
 7. Put the sample files to the subdomain document directory on your web server. 
