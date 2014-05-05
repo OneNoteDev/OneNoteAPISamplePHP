@@ -26,7 +26,8 @@ PHP files so that:
 
 * The web server you're using is accessible from the Internet
 * The web server has PHP installed, with the cURL package enabled  
-* You have a normal URL with hostname (not just an IP address) to use for the Redirect URL. 
+* You have a normal URL with hostname (not just an IP address) to use for the Redirect URL. If you run this from your own desktop, you'll need to modify your Hosts file (in C:\Windows\System32\drivers\etc for Windows machines and /private/etc for Macs) and map your local server IP address to a new domain name, as in the following example.
+ ![](images/HostsFile.png) 
 
 **Accounts**
 
@@ -40,15 +41,14 @@ send the pages to your OneDrive.
 After you've setup your web server described above,....
 
 1. Download the repo as a ZIP file to your local computer, and extract the files. Or, clone the repository into a local copy of Git.
-2. Configure a subdomain directory for the sample app. We recommend using a subdomain because you can only 
-register a single app with the root domain name on the Live Connect Developer Center. 
-3. Go to the [Microsoft app registration page](https://account.live.com/developers/applications/index).
-4. On the API Settings page, set Mobile or desktop setting to No.
-5. Set the Redirect URI to the sub-domain name of your web site. 
-6. On the App Setting page, copy the client ID and secret into the Callback.php file at ~lines 32 and 33. 
-7. Put the sample files to the subdomain document directory on your web server. 
-8. Using a web browser, access the default.php page
-9. Login using your Microsoft account, and allow the app to create pages in your OneNote notebooks.
+2. Go to the [Microsoft app registration page](https://account.live.com/developers/applications/index).
+3. On the API Settings page, set Mobile or desktop setting to No.
+4. Set the Redirect URI to the domain name of your web site, as in the following example. The root domain name must be unique, so if you use one domain for testing and another for production, you'll need to register separate client ids and secrets for each domain.
+![](images/OneNoteMSAScreen.png)
+5. On the App Setting page, copy the client ID and secret into the Callback.php file at ~lines 32 and 33. 
+6. Put the sample files in the root directory on your web server. 
+7. Open a browser and navigate to the default .php page.
+8. Login using your Microsoft account, and allow the app to create pages in your OneNote notebooks.
 
 ### Version info
 
