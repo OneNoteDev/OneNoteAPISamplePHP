@@ -14,6 +14,7 @@ find additional documentation at the links below.
 * [POST page with a URL rendered as an image](http://msdn.microsoft.com/EN-US/library/office/dn575431.aspx)
 * [POST page with HTML rendered as an image](http://msdn.microsoft.com/en-us/library/office/dn575432.aspx)
 * [POST page with a PDF file rendered and attached](http://msdn.microsoft.com/EN-US/library/office/dn655137.aspx)
+* [POST page to a specific section](http://msdn.microsoft.com/en-us/library/office/dn672416(v=office.15).aspx)
 * [Extract the returned oneNoteClientURL and oneNoteWebURL links](http://msdn.microsoft.com/EN-US/library/office/dn575433.aspx)
 
 ### Prerequisites
