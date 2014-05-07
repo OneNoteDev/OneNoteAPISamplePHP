@@ -256,15 +256,27 @@ POSTDATA;
         $this->finish($ch,$response);
     }
     
+    function getPagesEndpointUrlWithSectionName()
+    {
+		$sectionName = $_POST['section'];
+		if(isset($sectionName)) {
+            if (empty($sectionName)) {
+                $initUrl = URL;
+            }
+            else {
+                $initUrl = URL . "/?sectionName=" . $sectionName;
+            }
+        }
+	    return $initUrl;
+    }
 
     function initCurl($type = 'multipart')
     {
         $cookieValues = parseQueryString(@$_COOKIE['wl_auth']);
-        
         //Since cookies are user-supplied content, it must be encoded to avoid header injection
         $encodedAccessToken = rawurlencode(@$cookieValues['access_token']);
-            
-        $ch = curl_init(URL);
+	    $initUrl = $this->getPagesEndpointUrlWithSectionName();	
+        $ch = curl_init($initUrl);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         if ($type == 'multipart') {
             curl_setopt($ch,CURLOPT_HTTPHEADER,array("Content-Type: multipart/form-data; boundary=$this->boundary\r\n".

@@ -40,10 +40,21 @@ header("X-Frame-Options: SAMEORIGIN");
     <title>OneNote Service PHP Sample</title>
     <style>
         <!--
-        .Name {
-            font-family: 'Segoe UI', Verdana, Tahoma, Helvetica, Arial, sans-serif;
-            font-weight: bold;
-        }
+
+        body {
+    padding: 50px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: #00B7FF;
+}
+
+button {
+    padding: 10px 20px;
+    margin-bottom: 10px;
+}
+
 
         -->
     </style>
@@ -59,6 +70,9 @@ header("X-Frame-Options: SAMEORIGIN");
         <form method="POST" action="submit.php">
             <br />
             <input type="hidden" name="csrf_token" value="<?php /* Print the automatically generated session ID for CSRF protection */ echo htmlspecialchars($_SESSION['csrf_token']); ?>" />
+	        <p>Enter Section Name:</p>
+	        <input type="text" name="section" />
+	        <br/>
             <button type="submit" name="submit" value="text">Create OneNote Page with Text</button> <br />
             <button type="submit" name="submit" value="textimage">Create OneNote Page with Text and Images</button><br />
             <button type="submit" name="submit" value="html">Create OneNote Page with a Screenshot of HTML</button><br />
