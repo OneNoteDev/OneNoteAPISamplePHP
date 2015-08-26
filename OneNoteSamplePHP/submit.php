@@ -54,6 +54,13 @@ class OneNoteRequest
         $this->boundary = hash('sha256',rand());
     }
     
+    function getPages()
+    {
+        $ch = $this->initCurlGet();
+        $response = curl_exec($ch);       
+        $this->finish($ch,$response);
+    }
+    
     function createPageWithSimpleText()
     {
         $ch = $this->initCurl('simple');
@@ -294,6 +301,18 @@ POSTDATA;
         curl_setopt($ch,CURLOPT_POST,true);
         return $ch;
     }
+
+    function initCurlGet()
+    {
+        $cookieValues = parseQueryString(@$_COOKIE['wl_auth']);
+        //Since cookies are user-supplied content, it must be encoded to avoid header injection
+        $encodedAccessToken = rawurlencode(@$cookieValues['access_token']);
+    	$ch = curl_init(URL);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch,CURLOPT_HTTPHEADER,array("Authorization: Bearer ".$encodedAccessToken));
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+        return $ch;
+    }
     
     function finish($ch,$response)
     {
@@ -312,13 +331,17 @@ POSTDATA;
                 $decoded->links->oneNoteWebUrl->href.
                     '">OneNote Online</a>';
         }
+        elseif ($info['http_code'] == 200)
+        {
+            echo '<h2>Things look "200 OK!" :)</h2>';
+        }
         elseif ($info['http_code'] == 401)
         {
             echo '<h2>Authorization failed. Try signing out and signing in again.</h2>';
         }
         else 
         {
-            echo '<h2>Something went wrong...</h2>';
+            echo '<h2>Something went wrong...' . $info['http_code'] . '</h2>';
         }
         echo '</b></h2>';
         
@@ -346,6 +369,9 @@ if (isset($_POST['submit'])) //form submission?
     }
     else {
         switch ($_POST['submit']) {
+        	case "getPages":
+	        	$OneNoteRequest->getPages();
+	        	break;
             case "text": 
                 $OneNoteRequest->createPageWithSimpleText(); 
                 break;
