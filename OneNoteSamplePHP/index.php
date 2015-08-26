@@ -77,7 +77,8 @@ button {
             <button type="submit" name="submit" value="textimage">Create OneNote Page with Text and Images</button><br />
             <button type="submit" name="submit" value="html">Create OneNote Page with a Screenshot of HTML</button><br />
             <button type="submit" name="submit" value="url">Create OneNote Page with a Screenshot of a URL</button><br />
-            <button type="submit" name="submit" value="file">Create OneNote Page with an Attached and Rendered PDF File</button>
+            <button type="submit" name="submit" value="file">Create OneNote Page with an Attached and Rendered PDF File</button><br />
+            <button type="submit" name="submit" value="getPages">Get Pages (ignores section name, paginated)</button><br />
         </form>
 
     </div>
