@@ -28,7 +28,7 @@ PHP files so that:
 * The web server you're using is accessible from the Internet
 * The web server has PHP installed, with the cURL package enabled  
 * You have a normal URL with hostname (not just an IP address) to use for the Redirect URL. If you run this from your own desktop, you'll need to modify your Hosts file (in C:\Windows\System32\drivers\etc for Windows machines and /private/etc for Macs) and map your local server IP address to a new domain name, as in the following example.
- ![](images/HostsFile.png) 
+ ![Modify your Hosts file and map your local server IP address to a new domain name](images/HostsFile.png) 
 
 **Accounts**
 
@@ -45,7 +45,7 @@ After you've setup your web server described above,....
 2. Go to the [Microsoft app registration page](https://account.live.com/developers/applications/index).
 3. On the API Settings page, set Mobile or desktop setting to No.
 4. Set the Redirect URL to the address of the callback.php file on your hosted deployment. If the root deployment URL is http://onenoteapisamples.com:3000, then specify http://onenoteapisamples.com:3000/callback.php as the Redirect URL (as in the following example). This URL must exactly match the deployed redirect URL. The root domain name must be unique, so if you use one domain for testing and another for production, you'll need to register separate client ids and secrets for each domain.
-![](images/OneNoteMSAScreen.png)
+![Specify API settings in the Microsoft Application Registration Portal](images/OneNoteMSAScreen.png)
 
 ### Set up the sample
 
