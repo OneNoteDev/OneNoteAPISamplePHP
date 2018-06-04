@@ -48,7 +48,7 @@ function parseQueryString($query) {
 
 function sendRequest($url, $method = 'GET', $data = [], $headers = null) {
     if($headers === null) {
-        $headers = array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'))        
+        $headers = array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));        
     }
     
     $context = stream_context_create([
