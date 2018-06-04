@@ -36,70 +36,40 @@ define('CALLBACK', '%REDIRECT_URI_PATH%/callback.php');
 
 define('OAUTHURL', 'https://login.live.com/oauth20_token.srf');  
 
-function buildQueryString($array)
-{
-    $result = '';
-    foreach ($array as $k => $v)
-    {
-        if ($result == '')
-        {
-            $prefix = '';
-        }
-        else
-        {
-            $prefix = '&';
-        }
-        $result .= $prefix . rawurlencode($k) . '=' . rawurlencode($v);
-    }
+function buildQueryString($array) {
+    return http_build_query($array);
+}
 
+function parseQueryString($query) {
+    $result = [];
+    parse_str($query,$result);
     return $result;
 }
 
-function parseQueryString($query)
-{
-    $result = array();
-    $arr = preg_split('/&/', $query);
-    foreach ($arr as $arg)
-    {
-        if (strpos($arg, '=') !== false)
-        {
-            $kv = preg_split('/=/', $arg);
-            $result[rawurldecode($kv[0])] = rawurldecode($kv[1]);
-        }
+function sendRequest($url, $method = 'GET', $data = [], $headers = null) {
+    if($headers === null) {
+        $headers = array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));        
     }
-    return $result;
-}
-
-function sendRequest(
-    $url,
-    $method = 'GET',
-    $data = array(),
-    $headers = array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'))
-{
-    $context = stream_context_create(array
-                                     (
-                                     'http' => array(
-                                         'method' => $method,
-                                         'header' => $headers,
-                                         'content' => buildQueryString($data)
-                                     )
-                                     ));
+    
+    $context = stream_context_create([
+        'http' => [
+            'method' => $method,
+            'header' => $headers,
+            'content' => buildQueryString($data)
+        ]
+    ]);
 
     return file_get_contents($url, false, $context);
 }
 
-function requestAccessToken($content)
-{
-    $response = sendRequest(
-        OAUTHURL,
-        'POST',
-        $content);
+function requestAccessToken($content) {
+    $response = sendRequest(OAUTHURL, 'POST', $content);
 
-    if ($response !== false)
-    {
+    if ($response !== false) {
+        
         $authToken = json_decode($response);
-        if (!empty($authToken) && !empty($authToken->{ACCESSTOKEN}))
-        {
+        
+        if (!empty($authToken) && !empty($authToken->{ACCESSTOKEN})) {
             return $authToken;
         }
     }
@@ -107,114 +77,99 @@ function requestAccessToken($content)
     return false;
 }
 
-function requestAccessTokenByVerifier($verifier)
-{
-    return requestAccessToken(array(
-                                   'client_id' => CLIENTID,
-                                   'redirect_uri' => CALLBACK,
-                                   'client_secret' => CLIENTSECRET,
-                                   'code' => $verifier,
-                                   'grant_type' => 'authorization_code'
-                              ));
+function requestAccessTokenByVerifier($verifier) {
+    return requestAccessToken([
+        'client_id' => CLIENTID,
+        'redirect_uri' => CALLBACK,
+        'client_secret' => CLIENTSECRET,
+        'code' => $verifier,
+        'grant_type' => 'authorization_code'
+    ]);
 }
 
-function requestAccessTokenByRefreshToken($refreshToken)
-{
-    return requestAccessToken(array(
-                                   'client_id' => CLIENTID,
-                                   'redirect_uri' => CALLBACK,
-                                   'client_secret' => CLIENTSECRET,
-                                   'refresh_token' => $refreshToken,
-                                   'grant_type' => 'refresh_token'
-                              ));
+function requestAccessTokenByRefreshToken($refreshToken) {
+    return requestAccessToken([
+        'client_id' => CLIENTID,
+        'redirect_uri' => CALLBACK,
+        'client_secret' => CLIENTSECRET,
+        'refresh_token' => $refreshToken,
+        'grant_type' => 'refresh_token'
+    ]);
 }
 
-function handlePageRequest()
-{
-    if (!empty($_GET[ACCESSTOKEN]))
-    {
+function handlePageRequest() {
+    if (!empty($_GET[ACCESSTOKEN])) {
         // There is a token available already. It should be the token flow. Ignore it.
         return;
     }
 
     $verifier = $_GET[CODE];
-    if (!empty($verifier))
-    {
+    if (!empty($verifier)) {
         $token = requestAccessTokenByVerifier($verifier);
-        if ($token !== false)
-        {
+        if ($token !== false) {
             handleTokenResponse($token);
-        }
-        else
-        {
-            handleTokenResponse(null, array(
-                                           ERRORCODE => 'request_failed',
-                                           ERRORDESC => 'Failed to retrieve user access token.'));
-        }
+        } else {
+            handleTokenResponse(null, [
+                ERRORCODE => 'request_failed',
+                ERRORDESC => 'Failed to retrieve user access token.'
+            ]);
+        } 
 
         return;
     }
 
     $refreshToken = readRefreshToken();
-    if (!empty($refreshToken))
-    {
+    if (!empty($refreshToken)) {
         $token = requestAccessTokenByRefreshToken($refreshToken);
-        if ($token !== false)
-        {
+        if ($token !== false) {
             handleTokenResponse($token);
-        }
-        else
-        {
-            handleTokenResponse(null, array(
-                                           ERRORCODE => 'request_failed',
-                                           ERRORDESC => 'Failed to retrieve user access token.'));
+        } else {
+            handleTokenResponse(null, [
+                ERRORCODE => 'request_failed',
+                ERRORDESC => 'Failed to retrieve user access token.')
+            ];
         }
 
         return;
     }
 
-    $errorCode = $_GET[ERRORCODE];
-    $errorDesc = $_GET[ERRORDESC];
+    $errorCode = isset($_GET[ERRORCODE]) ? $_GET[ERRORCODE] : null;
+    $errorDesc = isset($_GET[ERRORDESC]) ? $_GET[ERRORDESC] : null;
 
-    if (!empty($errorCode))
-    {
-        handleTokenResponse(null, array(
-                                       ERRORCODE => $errorCode,
-                                       ERRORDESC => $errorDesc));
+    if (!empty($errorCode)) {
+        handleTokenResponse(null, [
+            ERRORCODE => $errorCode,
+            ERRORDESC => $errorDesc
+       ]);
     }
 }
 
-function readRefreshToken()
-{
+function readRefreshToken() {
     // read refresh token of the user identified by the site.
     return null;
 }
 
-function saveRefreshToken($refreshToken)
-{
+function saveRefreshToken($refreshToken) {
     // save the refresh token and associate it with the user identified by your site credential system.
 }
 
-function handleTokenResponse($token, $error = null)
-{
-    $authCookie = $_COOKIE[AUTHCOOKIE];
+function handleTokenResponse($token, $error = null) {
+    $authCookie = isset($_COOKIE[AUTHCOOKIE]) ? $_COOKIE[AUTHCOOKIE] : '';
     $cookieValues = parseQueryString($authCookie);
 
-    if (!empty($token))
-    {
+    if (!empty($token)) {
         $cookieValues[ACCESSTOKEN] = $token->{ACCESSTOKEN};
         $cookieValues[AUTHENTICATION_TOKEN] = $token->{AUTHENTICATION_TOKEN};
         $cookieValues[SCOPE] = $token->{SCOPE};
         $cookieValues[EXPIRESIN] = $token->{EXPIRESIN};
 
-        if (!empty($token->{ REFRESHTOKEN }))
+        if (!empty($token->{REFRESHTOKEN}))
         {
-            saveRefreshToken($token->{ REFRESHTOKEN });
+            saveRefreshToken($token->{REFRESHTOKEN});
         }
     }
 
-    if (!empty($error))
-    {
+    if (!empty($error)) {
         $cookieValues[ERRORCODE] = $error[ERRORCODE];
         $cookieValues[ERRORDESC] = $error[ERRORDESC];
     }
